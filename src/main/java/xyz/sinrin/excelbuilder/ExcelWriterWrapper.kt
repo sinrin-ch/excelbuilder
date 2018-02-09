@@ -4,21 +4,12 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
-import java.lang.reflect.Field
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 
-class ExcelWriterWrapper<in T>(private val clazz: Class<T>) {
-    // 属性名所对应的excel列的位置
-    lateinit var propertyNameIndex: Map<Int, String?>
-    //每一列的单元格样式.
-    private lateinit var rowCellStyleDic: Map<Int, CellStyle>
+class ExcelWriterWrapper<T>(clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
 
-
-    // 属性名和属性类型 字典
-    private val fieldNamesPropertyInfoDic: Map<String, Field> = clazz.fields.map { Pair<String, Field>(it.name, it) }
-            .toMap()
-
+//    private val getterDic: Map<String, Method> = clazz.methods.map { Pair<String, Method>(it.)}
 //    /**
 //     * 设置属性名,已经顺序.按照数组的名称排列,设置填充单元格的位置
 //     */
@@ -38,7 +29,7 @@ class ExcelWriterWrapper<in T>(private val clazz: Class<T>) {
     fun writeRows(sheet: Sheet,
                   objects: Iterable<T>, firstDataRowIndex: Int,
                   styleToBeUsedRowIndex: Int = firstDataRowIndex) {
-        this.rowCellStyleDic = this.readRowStyles(sheet, styleToBeUsedRowIndex)
+        super.rowCellStyleDic = this.readRowStyles(sheet, styleToBeUsedRowIndex)
         objects.withIndex().forEach {
             val i = it.index
             val row: Row = sheet.getRow(firstDataRowIndex + i) ?:
@@ -50,19 +41,35 @@ class ExcelWriterWrapper<in T>(private val clazz: Class<T>) {
     /**
      * 把obj对象的属性值,写入row的单元格中
      */
-    fun writeCells(row: Row, obj: T) {
-
-        this.propertyNameIndex
-                .filter { fieldNamesPropertyInfoDic.containsKey(it.value) }
-                .forEach {
-                    val field: Field = this.fieldNamesPropertyInfoDic[it.value]!!
-                    val cell: Cell = row.getCell(it.key) ?: row.createCell(it.key)
-                    val propertyValue = field.get(obj)
-                    if (propertyValue != null) {
-                        setCellValue(cell, propertyValue)
-                        this.rowCellStyleDic[it.key]?.also { cell.cellStyle = it }
+    private fun writeCells(row: Row, obj: T) {
+        if (super.propertyNameIndex.isNotEmpty() && (super.fieldNamesPropertyInfoDic.isNotEmpty() || super.getterMethodDic.isNotEmpty())) {
+            this.propertyNameIndex
+                    .map<Int, String?, Pair<Int, Any?>> {
+                        val propertyValue: Any? =
+                                when {
+                                    fieldNamesPropertyInfoDic.containsKey(it.value) -> this.fieldNamesPropertyInfoDic[it.value]!!.get(obj)
+                                    getterMethodDic.containsKey(it.value) -> getterMethodDic[it.value]!!.invoke(obj)
+                                    else -> null
+                                }
+                        return@map it.key to propertyValue
                     }
-                }
+                    .forEach {
+                        val propertyValue: Any = it.second ?: return@forEach
+                        val cell: Cell = row.getCell(it.first) ?: row.createCell(it.first)
+                        setCellValue(cell, propertyValue)
+                        this.rowCellStyleDic[it.first]?.also { cell.cellStyle = it }
+                    }
+        }
+        if (super.dynamicColPredicate != null) {
+            val dynamicColDictionary: Map<Int, Any?> = super.dynamicColPredicate!!.invoke(obj)
+            dynamicColDictionary.forEach {
+                val col: Int = it.key
+                val value: Any? = it.value
+                val cell: Cell = row.getCell(col) ?: row.createCell(col)
+                setCellValue(cell, value)
+                this.rowCellStyleDic[col]?.also { cell.cellStyle = it }
+            }
+        }
     }
 
     /**

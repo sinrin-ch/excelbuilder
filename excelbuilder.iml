@@ -6,19 +6,18 @@
         <compilerSettings />
         <compilerArguments>
           <option name="languageVersion" value="1.2" />
-          <option name="apiVersion" value="1.1" />
+          <option name="apiVersion" value="1.2" />
           <option name="pluginOptions">
             <array />
           </option>
           <option name="pluginClasspaths">
             <array />
           </option>
-          <option name="version" value="true" />
         </compilerArguments>
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_9">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -30,8 +29,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.21" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.2.21" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.21" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.2.21" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml:3.5-FINAL" level="project" />
@@ -49,5 +46,7 @@
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jre8:1.2.21" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jre7:1.2.21" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.2.21" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.2.21" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
   </component>
 </module>

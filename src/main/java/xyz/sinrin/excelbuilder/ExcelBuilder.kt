@@ -18,6 +18,8 @@ class ExcelBuilder<T> {
 
     private var styleToBeUsedRowIndex: Int = 1
 
+    private var dynamicColPredicate: ((T) -> Map<Int, Any?>)? = null
+
     /**
      * 构建导出excel的creator
      */
@@ -34,8 +36,8 @@ class ExcelBuilder<T> {
     constructor(clazz: Class<T>, templateWorkbookFileName: String, excelType: ExcelType) {
         val ins = File(templateWorkbookFileName).inputStream()
         val sheet = when (excelType) {
-            ExcelBuilder.ExcelType.XLS -> HSSFWorkbook(ins)
-            ExcelBuilder.ExcelType.XLSX -> XSSFWorkbook(ins)
+            ExcelType.XLS -> HSSFWorkbook(ins)
+            ExcelType.XLSX -> XSSFWorkbook(ins)
         }.getSheetAt(0)
         this.templateSheet = sheet
         this.clazz = clazz
@@ -53,38 +55,50 @@ class ExcelBuilder<T> {
         return this
     }
 
+    fun configDynamicPropertiesCols(predicate: (T) -> Map<Int, Any?>): ExcelBuilder<T> {
+        this.dynamicColPredicate = predicate
+        return this
+    }
 
-    fun configFirstDataRowIndex(firstDataRowIndex: Int, styleToBeUsedRowIndex: Int = firstDataRowIndex): ExcelBuilder<T> {
+    fun configFirstDataRowIndex(firstDataRowIndex: Int, styleToBeUsedRowIndex: Int): ExcelBuilder<T> {
         this.firstDataRowIndex = firstDataRowIndex
         this.styleToBeUsedRowIndex = styleToBeUsedRowIndex
         return this
     }
 
+    fun configFirstDataRowIndex(firstDataRowIndex: Int): ExcelBuilder<T> {
+        return this.configFirstDataRowIndex(firstDataRowIndex, firstDataRowIndex)
+    }
+
+    /**
+     * 检测封装excel数据的实体类的注解
+     */
+    private fun checkAnnotation(): Map<Int, String> {
+        if (this.propertyNameIndex.isNotEmpty()) {
+            return this.propertyNameIndex
+        }
+        val map = mutableMapOf<Int,String>()
+        clazz.declaredFields
+                .forEach { field ->
+                    val annotation = field.getAnnotation(CellConfig::class.java)
+                    if (annotation != null) {
+                        map.put(annotation.value,field.name)
+                    }
+                }
+        return map
+    }
+
     fun buildWriter(): ExcelWriter<T> {
+        this.propertyNameIndex = this.checkAnnotation()
         return ExcelWriter(
                 this.clazz,
                 this.templateSheet,
                 this.propertyNameIndex,
                 this.firstDataRowIndex,
-                this.styleToBeUsedRowIndex
+                this.styleToBeUsedRowIndex,
+                this.dynamicColPredicate
         )
     }
 
-    enum class ExcelType {
-        XLS, XLSX
-    }
 
-    class ExcelWriter<in T>(private val clazz: Class<T>,
-                            private val templateSheet: Sheet,
-                            private val propertyNameIndex: Map<Int, String>,
-                            private val firstDataRowIndex: Int,
-                            private val styleToBeUsedRowIndex: Int) {
-
-        fun writeSheet(excelDataObjects: Iterable<T>): Sheet {
-            val wrapper = ExcelWriterWrapper(clazz)
-                    .also { it.propertyNameIndex = this.propertyNameIndex }
-            wrapper.writeRows(templateSheet, excelDataObjects, firstDataRowIndex, styleToBeUsedRowIndex)
-            return this.templateSheet
-        }
-    }
 }

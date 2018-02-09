@@ -2,19 +2,24 @@ package xyz.sinrin.excelbuilder;
 
 public class User {
     private int id;
+    @CellConfig(2)
     private String name;
     private int age;
-
+//    @CellConfig(value=2)
+    public String girlFriend;
     public User(int id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
     }
 
+    public boolean isOpen(){
+        return true;
+    }
+
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
