@@ -23,7 +23,7 @@ public class BuilderTest {
         Sheet sheet = workbook.createSheet();
         new ExcelBuilder<User>(User.class,sheet)
 //                .configPropertiesSort("id", "name", "", "age")
-                .configFirstDataRowIndex(3)
+                .configDataRowIndex(3)
                 .buildWriter()
                 .writeSheet(list);
         String curentDir = System.getProperty("user.dir" ) + File.separator + "target";

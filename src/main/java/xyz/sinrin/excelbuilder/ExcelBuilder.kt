@@ -16,6 +16,8 @@ class ExcelBuilder<T> {
 
     private var firstDataRowIndex: Int = 1
 
+    private var lastDataRowIndex: Int = -1
+
     private var styleToBeUsedRowIndex: Int = 1
 
     private var dynamicColPredicate: ((T) -> Map<Int, Any?>)? = null
@@ -60,14 +62,20 @@ class ExcelBuilder<T> {
         return this
     }
 
-    fun configFirstDataRowIndex(firstDataRowIndex: Int, styleToBeUsedRowIndex: Int): ExcelBuilder<T> {
+    fun configDataRowIndex(firstDataRowIndex: Int, lastDataRowIndex: Int): ExcelBuilder<T> {
         this.firstDataRowIndex = firstDataRowIndex
-        this.styleToBeUsedRowIndex = styleToBeUsedRowIndex
+        this.lastDataRowIndex = lastDataRowIndex
         return this
     }
 
-    fun configFirstDataRowIndex(firstDataRowIndex: Int): ExcelBuilder<T> {
-        return this.configFirstDataRowIndex(firstDataRowIndex, firstDataRowIndex)
+    fun configDataRowIndex(firstDataRowIndex: Int): ExcelBuilder<T>{
+        this.firstDataRowIndex = firstDataRowIndex
+        return this
+    }
+
+    fun  configStyleToBeUsedRowIndex(styleToBeUsedRowIndex: Int): ExcelBuilder<T>{
+        this.styleToBeUsedRowIndex = styleToBeUsedRowIndex
+        return this
     }
 
     /**

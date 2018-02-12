@@ -13,7 +13,7 @@
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!--<java.version>1.7</java.version>-->
+        <java.version>1.6</java.version>
         <kotlin.version>1.2.21</kotlin.version>
         <spring.version>5.0.3.RELEASE</spring.version>
         <npm.executable>npm</npm.executable>
@@ -23,37 +23,14 @@
         <!--kotlin依赖包-->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.jetbrains.kotlin</groupId>-->
-        <!--<artifactId>kotlin-test-junit</artifactId>-->
-        <!--<version>${kotlin.version}</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>junit</groupId>-->
-        <!--<artifactId>junit</artifactId>-->
-        <!--<version>4.12</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>3.5-FINAL</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jre8</artifactId>
-            <version>${kotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -90,9 +67,9 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <jvmTarget>1.6</jvmTarget>
-                </configuration>
+                <!--<configuration>-->
+                    <!--<jvmTarget>1.6</jvmTarget>-->
+                <!--</configuration>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

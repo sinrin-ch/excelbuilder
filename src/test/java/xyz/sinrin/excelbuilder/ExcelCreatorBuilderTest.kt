@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
     val sheet: Sheet = workbook.createSheet()
     ExcelBuilder(User::class.java, sheet)
             .configPropertiesSort("id",null,"open", "name", "", "age")
-            .configFirstDataRowIndex(3)
+            .configDataRowIndex(3)
             .buildWriter()
             .writeSheet(list)
     val currentDir = System.getProperty("user.dir") +
