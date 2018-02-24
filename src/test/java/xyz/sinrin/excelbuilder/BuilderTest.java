@@ -1,5 +1,6 @@
 package xyz.sinrin.excelbuilder;
 
+import kotlin.jvm.functions.Function1;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,7 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BuilderTest {
     public static void main(String[] args) throws IOException {
@@ -23,6 +26,16 @@ public class BuilderTest {
         Sheet sheet = workbook.createSheet();
         new ExcelBuilder<User>(User.class,sheet)
 //                .configPropertiesSort("id", "name", "", "age")
+                .configDynamicPropertiesCols(new Function1<User, Map<Integer, ?>>() {
+                    @Override
+                    public Map<Integer, ?> invoke(User user) {
+                        Map<Integer, Object> map = new HashMap<Integer, Object>();
+                        map.put(user.getId(), user.getId());
+                        map.put(4,user.getName());
+                        map.put(user.getAge()-13,user.getAge());
+                        return map;
+                    }
+                })
                 .configDataRowIndex(3)
                 .buildWriter()
                 .writeSheet(list);

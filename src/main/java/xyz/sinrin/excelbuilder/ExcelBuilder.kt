@@ -5,11 +5,12 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
+import java.lang.reflect.Field
 
 class ExcelBuilder<T> {
     private val templateSheet: Sheet
 
-    private var clazz: Class<T>
+    private val clazz: Class<T>
 
     // 设置列数,和属性名对应位置{{0, "Date"}, {1, "LineName"}}
     private var propertyNameIndex: Map<Int, String> = emptyMap()
@@ -62,18 +63,19 @@ class ExcelBuilder<T> {
         return this
     }
 
-    fun configDataRowIndex(firstDataRowIndex: Int, lastDataRowIndex: Int): ExcelBuilder<T> {
+    @JvmOverloads
+    fun configDataRowIndex(firstDataRowIndex: Int, lastDataRowIndex: Int = -1): ExcelBuilder<T> {
         this.firstDataRowIndex = firstDataRowIndex
         this.lastDataRowIndex = lastDataRowIndex
         return this
     }
 
-    fun configDataRowIndex(firstDataRowIndex: Int): ExcelBuilder<T>{
-        this.firstDataRowIndex = firstDataRowIndex
-        return this
-    }
+//    fun configDataRowIndex(firstDataRowIndex: Int): ExcelBuilder<T>{
+//        this.firstDataRowIndex = firstDataRowIndex
+//        return this
+//    }
 
-    fun  configStyleToBeUsedRowIndex(styleToBeUsedRowIndex: Int): ExcelBuilder<T>{
+    fun configStyleToBeUsedRowIndex(styleToBeUsedRowIndex: Int): ExcelBuilder<T> {
         this.styleToBeUsedRowIndex = styleToBeUsedRowIndex
         return this
     }
@@ -85,19 +87,29 @@ class ExcelBuilder<T> {
         if (this.propertyNameIndex.isNotEmpty()) {
             return this.propertyNameIndex
         }
-        val map = mutableMapOf<Int,String>()
-        clazz.declaredFields
-                .forEach { field ->
-                    val annotation = field.getAnnotation(CellConfig::class.java)
-                    if (annotation != null) {
-                        map.put(annotation.value,field.name)
-                    }
-                }
-        return map
+//        val map = mutableMapOf<Int, String>()
+//        clazz.declaredFields
+//                .forEach { field ->
+//                    val annotation = field.getAnnotation(CellConfig::class.java)
+//                    if (annotation != null) {
+//                        map.put(annotation.value, field.name)
+//                    }
+//                }
+//        clazz.declaredFields
+//                .forEach { field ->
+//                    field.getAnnotation(CellConfig::class.java)?.let { map.put(it.value, field.name) }
+//                }
+        return clazz.declaredFields.mapNotNull<Field, Pair<Int, String>> { field ->
+            val annotation: CellConfig = field.getAnnotation(CellConfig::class.java) ?: return@mapNotNull null
+            return@mapNotNull annotation.value to field.name
+        }.toMap<Int, String>()
     }
 
     fun buildWriter(): ExcelWriter<T> {
-        this.propertyNameIndex = this.checkAnnotation()
+        // 如果没有指定属性名对应的列数,也没有指定动态委托,检测注解
+        if (this.propertyNameIndex.isEmpty() && dynamicColPredicate == null) {
+            this.propertyNameIndex = this.checkAnnotation()
+        }
         return ExcelWriter(
                 this.clazz,
                 this.templateSheet,
