@@ -101,6 +101,7 @@ class ExcelWriterWrapper<T>(clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
                 is Short -> newCell.setCellValue(value.toDouble())
                 is Long -> newCell.setCellValue(value.toDouble())
                 is BigDecimal -> newCell.setCellValue(value.toDouble())
+                else -> newCell.setCellValue(value.toString())
             }
         }
     }

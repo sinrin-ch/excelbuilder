@@ -6,7 +6,7 @@
 
     <groupId>xyz.sinrin</groupId>
     <artifactId>excel-builder</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
 
     <properties>
         <!--增量编译(从 Kotlin 1.1.2 起支持)-->
