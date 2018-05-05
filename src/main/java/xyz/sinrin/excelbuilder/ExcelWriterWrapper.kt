@@ -7,7 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import java.math.BigDecimal
 import java.util.*
 
-class ExcelWriterWrapper<T>(clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
+class ExcelWriterWrapper<T> internal constructor(clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
 
 //    private val getterDic: Map<String, Method> = clazz.methods.map { Pair<String, Method>(it.)}
 //    /**

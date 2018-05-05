@@ -6,9 +6,11 @@ import org.apache.poi.ss.usermodel.Sheet
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
-class ExcelReaderWrapper<T>(private val clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
+class ExcelReaderWrapper<T> internal constructor(private val clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
     /**
      * 从sheet读取数据并封装成list
      */
@@ -55,21 +57,30 @@ class ExcelReaderWrapper<T>(private val clazz: Class<T>) : ExcelBaseWrapper<T>(c
         return when (type) {
             String::class.java ->
                 when {
-                    cell.cellType == 2 -> cell.numericCellValue.toString()
-                    cell.cellType == 1 -> cell.booleanCellValue.toString()
-                    cell.cellType == 3 -> ""
+                    cell.cellType == Cell.CELL_TYPE_NUMERIC -> cell.numericCellValue.toString()
+                    cell.cellType == Cell.CELL_TYPE_BOOLEAN -> cell.booleanCellValue.toString()
+                    cell.cellType == Cell.CELL_TYPE_BLANK -> ""
                     else -> cell.stringCellValue
                 }
             Date::class.java -> cell.dateCellValue
+            LocalDate::class.java -> cell.dateCellValue?.toInstant()?.atZone(ZoneId.systemDefault())?.toLocalDate()
             Float::class.java,
+            java.lang.Float::class.java -> cell.numericCellValue.toFloat()
             Double::class.java,
-            BigDecimal::class.java,
+            java.lang.Double::class.java -> cell.numericCellValue
+            BigDecimal::class.java -> cell.numericCellValue.toBigDecimal()
             Int::class.java,
-            Byte::class.java,
-            Short::class.java,
-            Long::class.java -> cell.numericCellValue
+            Integer::class.java -> cell.numericCellValue.toInt()
+            java.lang.Byte::class.java,
+            Byte::class.java -> cell.numericCellValue.toByte()
+            java.lang.Short::class.java,
+            Short::class.java -> cell.numericCellValue.toShort()
+            java.lang.Long::class.java,
+            Long::class.java -> cell.numericCellValue.toLong()
+            java.lang.Boolean::class.java,
             Boolean::class.java -> cell.booleanCellValue
-            Char::class.java -> cell.stringCellValue.first()
+            java.lang.Character::class.java,
+            Char::class.java -> cell.stringCellValue.firstOrNull()
             else -> null
         }
     }
