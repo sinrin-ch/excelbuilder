@@ -87,18 +87,6 @@ class ExcelBuilder<T> {
         if (this.propertyNameIndex.isNotEmpty()) {
             return this.propertyNameIndex
         }
-//        val map = mutableMapOf<Int, String>()
-//        clazz.declaredFields
-//                .forEach { field ->
-//                    val annotation = field.getAnnotation(CellConfig::class.java)
-//                    if (annotation != null) {
-//                        map.put(annotation.value, field.name)
-//                    }
-//                }
-//        clazz.declaredFields
-//                .forEach { field ->
-//                    field.getAnnotation(CellConfig::class.java)?.let { map.put(it.value, field.name) }
-//                }
         return clazz.declaredFields.mapNotNull<Field, Pair<Int, String>> { field ->
             val annotation: CellConfig = field.getAnnotation(CellConfig::class.java) ?: return@mapNotNull null
             return@mapNotNull annotation.value to field.name
@@ -120,7 +108,7 @@ class ExcelBuilder<T> {
         )
     }
 
-    fun buildReader(): ExcelReader<T> {
+fun buildReader(): ExcelReader<T> {
         // 如果没有指定属性名对应的列数,也没有指定动态委托,检测注解
         if (this.propertyNameIndex.isEmpty() && dynamicColPredicate == null) {
             this.propertyNameIndex = this.checkAnnotation()
