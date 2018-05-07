@@ -120,5 +120,11 @@ class ExcelBuilder<T> {
         )
     }
 
-
+    fun buildReader(): ExcelReader<T> {
+        // 如果没有指定属性名对应的列数,也没有指定动态委托,检测注解
+        if (this.propertyNameIndex.isEmpty() && dynamicColPredicate == null) {
+            this.propertyNameIndex = this.checkAnnotation()
+        }
+        return ExcelReader(this.clazz, this.templateSheet, this.propertyNameIndex, this.firstDataRowIndex, this.lastDataRowIndex)
+    }
 }

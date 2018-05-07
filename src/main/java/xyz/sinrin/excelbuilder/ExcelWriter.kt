@@ -2,7 +2,7 @@ package xyz.sinrin.excelbuilder
 
 import org.apache.poi.ss.usermodel.Sheet
 
-class ExcelWriter<T>(private val clazz: Class<T>,
+class ExcelWriter<T> internal constructor(private val clazz: Class<T>,
                      private val templateSheet: Sheet,
                      private val propertyNameIndex: Map<Int, String>,
                      private val firstDataRowIndex: Int,

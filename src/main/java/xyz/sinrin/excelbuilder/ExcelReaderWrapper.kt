@@ -8,7 +8,7 @@ import java.lang.reflect.Method
 import java.math.BigDecimal
 import java.util.*
 
-class ExcelReaderWrapper<T>(private val clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
+class ExcelReaderWrapper<T> internal constructor(private val clazz: Class<T>) : ExcelBaseWrapper<T>(clazz) {
     /**
      * 从sheet读取数据并封装成list
      */
@@ -55,9 +55,9 @@ class ExcelReaderWrapper<T>(private val clazz: Class<T>) : ExcelBaseWrapper<T>(c
         return when (type) {
             String::class.java ->
                 when {
-                    cell.cellType == 2 -> cell.numericCellValue.toString()
-                    cell.cellType == 1 -> cell.booleanCellValue.toString()
-                    cell.cellType == 3 -> ""
+                    cell.cellType == Cell.CELL_TYPE_NUMERIC -> cell.numericCellValue.toString()
+                    cell.cellType == Cell.CELL_TYPE_BOOLEAN -> cell.booleanCellValue.toString()
+                    cell.cellType == Cell.CELL_TYPE_BLANK -> ""
                     else -> cell.stringCellValue
                 }
             Date::class.java -> cell.dateCellValue
@@ -65,6 +65,7 @@ class ExcelReaderWrapper<T>(private val clazz: Class<T>) : ExcelBaseWrapper<T>(c
             Double::class.java,
             BigDecimal::class.java,
             Int::class.java,
+            Integer::class.java,
             Byte::class.java,
             Short::class.java,
             Long::class.java -> cell.numericCellValue
